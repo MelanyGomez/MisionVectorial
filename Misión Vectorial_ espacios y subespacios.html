@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Misión Vectorial: espacios y subespacios</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b1f;--panel:#0f1536;--line:#27306b;--tx:#e8ecff;--mut:#9aa6d9;--cy:#4fe3ff;--am:#ffb347;--vi:#b48cff;--ok:#5dffb0;--bad:#ff6b7d;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#22145a 0%,transparent 60%),var(--bg);color:var(--tx);font:17px/1.6 'Space Grotesk',system-ui,sans-serif}
+h1,h2,h3{font-family:'Unbounded','Space Grotesk',sans-serif;line-height:1.15;margin:0 0 .6em}
+h1{font-size:clamp(2rem,6vw,3.6rem)}h2{font-size:clamp(1.3rem,3.5vw,2rem);color:var(--cy)}h3{font-size:1.05rem;color:var(--am)}
+main{max-width:860px;margin:0 auto;padding:0 18px 80px}
+section{margin:56px 0}
+p{max-width:68ch}
+.hero{padding:70px 0 20px}
+.hero p{color:var(--mut);font-size:1.1rem}
+#hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:#070b1fe6;border-bottom:1px solid var(--line);padding:8px 18px;display:flex;gap:14px;align-items:center;font-size:.9rem}
+#hud .bar{flex:1;height:8px;background:var(--line);border-radius:9px;overflow:hidden}
+#hud .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cy),var(--vi));transition:width .4s}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin:16px 0}
+.tip{border-left:4px solid var(--am);background:#ffb3470f;padding:10px 14px;border-radius:0 10px 10px 0;margin:14px 0}
+canvas{width:100%;max-width:100%;background:#050824;border:1px solid var(--line);border-radius:12px;touch-action:none;display:block}
+button,select,input{font:inherit;color:var(--tx)}
+button,select{background:#1a2257;border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--cy)}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}
+.ro{font-family:ui-monospace,Menlo,monospace;font-size:.88rem;color:var(--mut)}
+.chk{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.chk div{border:1px solid var(--line);border-radius:10px;padding:10px;font-size:.92rem}
+.chk .y{border-color:var(--ok);background:#5dffb012}.chk .n{border-color:var(--bad);background:#ff6b7d14}
+details{border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:8px 0;background:var(--panel)}
+summary{cursor:pointer;font-weight:700}
+table{border-collapse:collapse;width:100%;font-size:.9rem;display:block;overflow-x:auto}
+td,th{border:1px solid var(--line);padding:8px 10px;text-align:left}th{color:var(--am)}
+.opt{display:block;width:100%;text-align:left;margin:6px 0}
+.opt.ok{border-color:var(--ok);background:#5dffb01a}.opt.no{border-color:var(--bad);background:#ff6b7d1a}
+.vids{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.vids a{display:block;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;color:var(--tx);text-decoration:none}
+.vids a:hover{border-color:var(--am)}.vids small{color:var(--mut);display:block;margin-top:6px}
+code{background:#1a2257;padding:1px 6px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}#hud .bar i{transition:none}}
+</style>
+</head>
+<body>
+<div id="hud"><span>🚀 <b id="rank">Cadete</b></span><div class="bar"><i id="xpb"></i></div><span><b id="xp">0</b> XP</span></div>
+<main>
+<header class="hero">
+<h1>Misión Vectorial</h1>
+<p>Tu nave necesita navegar el espacio de las matemáticas. Aquí aprendes <b>espacios vectoriales</b> y <b>subespacios</b> tocando, arrastrando y probando. Cada interacción te da XP. Sin relleno: son 5 módulos cortos, de 5 minutos cada uno.</p>
+<div class="tip">Truco para no distraerte: haz un módulo, cierra la pestaña de redes y pasa al siguiente. Interactuar cuenta como estudiar.</div>
+</header>
+
+<section id="m1">
+<h2>Módulo 1 · El hangar: ¿qué es un espacio vectorial?</h2>
+<p>Piensa en el <b>mapa de navegación</b> de tu nave. Los vectores son desplazamientos (flechas). Un espacio vectorial es cualquier conjunto donde puedes <b>sumar</b> flechas y <b>estirarlas</b> con un número (escalar) sin salirte del conjunto, cumpliendo 10 reglas (axiomas).</p>
+<div class="card">
+<h3>Laboratorio 1: suma y escala vectores en ℝ²</h3>
+<p class="ro">Arrastra las puntas de <span style="color:var(--cy)">u</span> y <span style="color:var(--am)">v</span>. La flecha blanca es u + v, la violeta es c·u.</p>
+<canvas id="c1" width="640" height="360" aria-label="Plano con vectores u, v, u+v y c por u"></canvas>
+<div class="row"><label>c = <input type="range" id="cs" min="-3" max="3" step="0.1" value="1"> <b id="cv">1.0</b></label></div>
+<div class="ro" id="r1"></div>
+</div>
+<details open><summary>Los 10 axiomas, traducidos a lenguaje de nave</summary>
+<p>Probados con u = (2,1), v = (1,3), w = (0,2) y los escalares a = 2, b = 3 en ℝ². Son reglas de sentido común: «las flechas se portan como esperas».</p>
+<table>
+<tr><th>#</th><th>Axioma</th><th>En palabras sencillas</th><th>Ejemplo en ℝ²</th></tr>
+<tr><td colspan="4"><b>Reglas de la suma</b></td></tr>
+<tr><td>1</td><td>Cerradura de la suma</td><td>Sumar dos vectores te deja dentro del espacio.</td><td>u+v = (3,4) sigue en ℝ²</td></tr>
+<tr><td>2</td><td>Conmutatividad</td><td>El orden no importa: u+v = v+u.</td><td>(2,1)+(1,3) = (1,3)+(2,1) = (3,4)</td></tr>
+<tr><td>3</td><td>Asociatividad</td><td>Al sumar tres, no importa cuáles agrupes primero.</td><td>(u+v)+w = u+(v+w) = (3,6)</td></tr>
+<tr><td>4</td><td>Vector cero</td><td>Existe un «no moverse» que no cambia nada.</td><td>u+(0,0) = u</td></tr>
+<tr><td>5</td><td>Inverso aditivo</td><td>Cada vector tiene su opuesto que lo cancela (volver atrás).</td><td>u+(−2,−1) = (0,0)</td></tr>
+<tr><td colspan="4"><b>Reglas de los escalares (números)</b></td></tr>
+<tr><td>6</td><td>Cerradura del escalar</td><td>Estirar un vector te deja dentro del espacio.</td><td>2u = (4,2) sigue en ℝ²</td></tr>
+<tr><td>7</td><td>Distributiva sobre vectores</td><td>Estirar una suma = estirar cada parte y sumar.</td><td>2(u+v) = 2u+2v = (6,8)</td></tr>
+<tr><td>8</td><td>Distributiva sobre escalares</td><td>Estirar por (a+b) = estirar por a, por b y sumar.</td><td>(2+3)u = 2u+3u = (10,5)</td></tr>
+<tr><td>9</td><td>Compatibilidad</td><td>Estirar dos veces = estirar por el producto.</td><td>2(3u) = (2·3)u = (12,6)</td></tr>
+<tr><td>10</td><td>Identidad escalar</td><td>Multiplicar por 1 no cambia nada.</td><td>1·u = u</td></tr>
+</table>
+<div class="tip"><b>Por qué solo 3 pruebas en un subespacio:</b> los axiomas 2, 3, 5, 7, 8, 9 y 10 son «herencia»: si valen en el espacio grande, valen en cualquier parte de él. Solo hay que comprobar que no te sales (axiomas 1 y 6) y que está el cero (axioma 4). El 5 sale solo de multiplicar por −1.</div>
+<p>Ejemplos de espacios vectoriales: ℝ², ℝ³, polinomios P₂ = {a+bx+cx²}, matrices M₂ₓ₂(ℝ), funciones continuas.</p></details>
+</section>
+
+<section id="m2">
+<h2>Módulo 2 · El escáner: ¿es un subespacio?</h2>
+<p>Un <b>subespacio</b> es un subconjunto W de V que sigue siendo un espacio vectorial. No necesitas revisar los 10 axiomas, solo <b>3 pruebas</b>:</p>
+<div class="card"><b>① Contiene al 0</b> · <b>② Cerrado bajo suma</b> (u, v ∈ W ⇒ u+v ∈ W) · <b>③ Cerrado bajo escalares</b> (u ∈ W ⇒ c·u ∈ W)</div>
+<div class="tip">Si falla el 0, ya terminaste: no es subespacio. Pero tener el 0 no basta (el primer cuadrante lo tiene y aun así falla).</div>
+<div class="card">
+<h3>Laboratorio 2: escáner de subespacios</h3>
+<div class="row"><select id="sel" aria-label="Conjunto a escanear"></select><button id="scan">🔍 Escanear con vectores al azar</button></div>
+<canvas id="c2" width="640" height="360" aria-label="Región del conjunto elegido"></canvas>
+<div class="chk" id="res"></div>
+<p class="ro" id="note"></p>
+</div>
+<p>Ojo: el escáner prueba muchos ejemplos. Un contraejemplo <b>demuestra</b> que no es subespacio; pasar todas las pruebas solo es una pista, y la demostración se hace con álgebra (como en la guía de abajo).</p>
+</section>
+
+<section id="m3">
+<h2>Módulo 3 · Demostrar paso a paso</h2>
+<p>Ejemplo: <code>W = {(x,y,z) ∈ ℝ³ : x + y + z = 0}</code> (datos válidos de sensores redundantes).</p>
+<details open><summary>① El cero</summary>0+0+0 = 0, así que (0,0,0) ∈ W.</details>
+<details><summary>② Suma</summary>Si x₁+y₁+z₁ = 0 y x₂+y₂+z₂ = 0, entonces (x₁+x₂)+(y₁+y₂)+(z₁+z₂) = 0+0 = 0. Entonces u+v ∈ W.</details>
+<details><summary>③ Escalares</summary>ax₁+ay₁+az₁ = a(x₁+y₁+z₁) = a·0 = 0. Entonces au ∈ W.</details>
+<details><summary>Resultado geométrico</summary>Es un <b>plano que pasa por el origen</b>. Se parametriza como (s, t, −s−t) = s(1,0,−1) + t(0,1,−1), es decir, W = gen{(1,0,−1), (0,1,−1)}, dimensión 2.</details>
+<div class="tip"><b>Regla de oro:</b> en ℝ² los subespacios son el origen, las rectas por el origen y todo ℝ². En ℝ³ añade los planos por el origen. Una recta que no pasa por el origen (y = 2x+1) nunca lo es.</div>
+<p><b>Propiedades útiles:</b> la intersección de subespacios es subespacio; la suma W₁+W₂ también; la <b>unión</b> no necesariamente (ejes x e y: (1,0)+(0,1) = (1,1) queda fuera).</p>
+</section>
+
+<section id="m4">
+<h2>Módulo 4 · El atajo del núcleo (kernel)</h2>
+<p>Truco de comandante: si tu conjunto es «todo lo que una transformación lineal T manda a 0», es subespacio automáticamente. S = ker(T) = {v : T(v) = 0}.</p>
+<table><tr><th>Subespacio</th><th>Espacio</th><th>Dim.</th><th>Es el núcleo de</th></tr>
+<tr><td>ax² + bx</td><td>P₂(ℝ)</td><td>2</td><td>p ↦ p(0)</td></tr>
+<tr><td>x₁ = x₄</td><td>ℝ⁴</td><td>3</td><td>x₁ − x₄</td></tr>
+<tr><td>Matrices de traza nula</td><td>Mₙₓₙ</td><td>n²−1</td><td>A ↦ tr(A)</td></tr>
+<tr><td>f(1/2) = 0</td><td>C([0,1])</td><td>∞</td><td>f ↦ f(1/2)</td></tr>
+<tr><td>Sistema homogéneo Ax=0</td><td>ℝ³</td><td>1 (ejemplo)</td><td>v ↦ Av</td></tr></table>
+<p>Por qué importa en tu carrera: el núcleo de una matriz aparece en observabilidad y controlabilidad de sistemas. Las soluciones de una ecuación diferencial lineal homogénea también forman un subespacio.</p>
+<p><b>No son subespacios:</b> y = 2x+1, matrices invertibles (la nula no lo es), ℝ² con coordenadas positivas, polinomios de grado exactamente 2.</p>
+</section>
+
+<section id="m5">
+<h2>Módulo 5 · Misiones de práctica</h2>
+<p>25 preguntas sacadas de tus documentos, en 3 niveles: 🟢 <b>Básico</b> (los 7 ejercicios de dificultad baja), 🟡 <b>Ejemplos del temario</b> (dimensiones y contraejemplos) y 🔴 <b>Avanzado</b> (los 6 ejercicios avanzados). Cada acierto da 30 XP.</p>
+<div id="quiz"></div>
+</section>
+
+<section>
+<h2>Videos para reforzar</h2>
+<p>Te dejo búsquedas directas en YouTube para que elijas el video que más te guste (así siempre ves resultados vigentes).</p>
+<div class="vids">
+<a target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=3blue1brown+esencia+del+algebra+lineal+vectores">▶ 3Blue1Brown: Esencia del álgebra lineal<small>Visualización genial de vectores, combinaciones lineales y gen</small></a>
+<a target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=subespacios+vectoriales+explicacion+ejemplos+resueltos">▶ Subespacios con ejemplos resueltos<small>Los 3 criterios aplicados paso a paso</small></a>
+<a target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=espacio+vectorial+10+axiomas+explicados">▶ Los 10 axiomas explicados<small>Para entender qué exige un espacio vectorial</small></a>
+<a target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=nucleo+de+una+matriz+kernel+subespacio+algebra+lineal">▶ Núcleo (kernel) de una matriz<small>Conecta sistemas homogéneos con subespacios</small></a>
+</div>
+</section>
+<p class="ro">Fin de la misión. Repite los laboratorios hasta que adivines el resultado antes de escanear.</p>
+</main>
+<script>
+(function(){
+var xp=0,seen={};
+function gain(n,key){if(key){if(seen[key])return;seen[key]=1}xp+=n;document.getElementById('xp').textContent=xp;
+document.getElementById('xpb').style.width=Math.min(100,xp/8)+'%';
+document.getElementById('rank').textContent=xp>=250?'Comandante':xp>=100?'Piloto':'Cadete'}
+function $(i){return document.getElementById(i)}
+/* Lab 1 */
+var c1=$('c1'),g=c1.getContext('2d'),S=40,W=c1.width,H=c1.height,cx=W/2,cy=H/2;
+var u={x:2,y:1},v={x:-1,y:2},drag=null;
+function px(p){return[cx+p.x*S,cy-p.y*S]}
+function arrow(a,b,col,dash){var A=px(a),B=px(b);g.strokeStyle=col;g.fillStyle=col;g.lineWidth=2.5;g.setLineDash(dash||[]);
+g.beginPath();g.moveTo(A[0],A[1]);g.lineTo(B[0],B[1]);g.stroke();g.setLineDash([]);
+var an=Math.atan2(B[1]-A[1],B[0]-A[0]);g.beginPath();g.moveTo(B[0],B[1]);g.lineTo(B[0]-12*Math.cos(an-.4),B[1]-12*Math.sin(an-.4));g.lineTo(B[0]-12*Math.cos(an+.4),B[1]-12*Math.sin(an+.4));g.fill()}
+function grid(g2){g2.strokeStyle='#1a2257';g2.lineWidth=1;g2.setLineDash([]);for(var i=-8;i<=8;i++){g2.beginPath();g2.moveTo(cx+i*S,0);g2.lineTo(cx+i*S,H);g2.stroke()}
+for(i=-5;i<=5;i++){g2.beginPath();g2.moveTo(0,cy+i*S);g2.lineTo(W,cy+i*S);g2.stroke()}
+g2.strokeStyle='#4a58b0';g2.beginPath();g2.moveTo(0,cy);g2.lineTo(W,cy);g2.moveTo(cx,0);g2.lineTo(cx,H);g2.stroke()}
+function f(n){return n.toFixed(1)}
+function d1(){var c=parseFloat($('cs').value),z={x:0,y:0},s={x:u.x+v.x,y:u.y+v.y},cu={x:c*u.x,y:c*u.y};
+g.clearRect(0,0,W,H);grid(g);
+arrow(u,{x:u.x+v.x,y:u.y+v.y},'#ffb34766',[5,5]);
+arrow(v,{x:u.x+v.x,y:u.y+v.y},'#4fe3ff66',[5,5]);
+arrow(z,cu,'#b48cff');arrow(z,s,'#ffffff');arrow(z,u,'#4fe3ff');arrow(z,v,'#ffb347');
+[[u,'#4fe3ff'],[v,'#ffb347']].forEach(function(a){var P=px(a[0]);g.fillStyle=a[1];g.beginPath();g.arc(P[0],P[1],9,0,7);g.fill()});
+$('cv').textContent=f(c);
+$('r1').textContent='u=('+f(u.x)+', '+f(u.y)+')  v=('+f(v.x)+', '+f(v.y)+')  u+v=('+f(s.x)+', '+f(s.y)+')  c·u=('+f(cu.x)+', '+f(cu.y)+')  · Siempre caes en ℝ²: eso es la cerradura.'}
+function pos(e){var r=c1.getBoundingClientRect(),k=W/r.width;return{x:((e.clientX-r.left)*k-cx)/S,y:-((e.clientY-r.top)*k-cy)/S}}
+c1.addEventListener('pointerdown',function(e){var p=pos(e);drag=Math.hypot(p.x-u.x,p.y-u.y)<.5?u:Math.hypot(p.x-v.x,p.y-v.y)<.5?v:null;if(drag)c1.setPointerCapture(e.pointerId)});
+c1.addEventListener('pointermove',function(e){if(!drag)return;var p=pos(e);drag.x=Math.max(-7,Math.min(7,Math.round(p.x*2)/2));drag.y=Math.max(-4,Math.min(4,Math.round(p.y*2)/2));gain(10,'drag');d1()});
+c1.addEventListener('pointerup',function(){drag=null});
+$('cs').addEventListener('input',function(){gain(10,'sl');d1()});d1();
+/* Lab 2 */
+function R(a,b){return a+Math.random()*(b-a)}
+var sets=[
+{n:'y = 2x (recta por el origen)',t:'line',a:2,b:0},
+{n:'y = 2x + 1 (recta que no pasa por el origen)',t:'line',a:2,b:1},
+{n:'x = 0 (el eje y)',t:'line',vert:1},
+{n:'x ≥ 0, y ≥ 0 (primer cuadrante)',t:'reg',m:function(x,y){return x>=-1e-9&&y>=-1e-9}},
+{n:'x² + y² ≤ 1 (disco unidad)',t:'reg',m:function(x,y){return x*x+y*y<=1+1e-9}},
+{n:'xy = 0 (los dos ejes juntos)',t:'axes'}];
+var sel=$('sel');sets.forEach(function(s,i){var o=document.createElement('option');o.value=i;o.textContent=s.n;sel.appendChild(o)});
+function mem(s,x,y){var e=1e-6;if(s.t==='line')return s.vert?Math.abs(x)<e:Math.abs(y-(s.a*x+s.b))<e;if(s.t==='axes')return Math.abs(x*y)<e;return s.m(x,y)}
+function samp(s){if(s.t==='line'){if(s.vert)return{x:0,y:R(-3,3)};var x=R(-3,3);return{x:x,y:s.a*x+s.b}}
+if(s.t==='axes'){var r=R(-3,3);return Math.random()<.5?{x:r,y:0}:{x:0,y:r}}
+var p;if(s.m===undefined)return{x:0,y:0};do{p={x:R(0,1.2),y:R(0,1.2)};if(s.n.indexOf('disco')>-1)p={x:R(-1,1),y:R(-1,1)}}while(!s.m(p.x,p.y));return p}
+var c2=$('c2'),h=c2.getContext('2d'),pts=[];
+function d2(){var s=sets[sel.value];h.clearRect(0,0,W,H);grid(h);h.strokeStyle='#4fe3ff';h.fillStyle='#4fe3ff55';h.lineWidth=3;
+if(s.t==='line'||s.t==='axes'){h.beginPath();if(s.t==='axes'){h.moveTo(0,cy);h.lineTo(W,cy);h.moveTo(cx,0);h.lineTo(cx,H)}else if(s.vert){h.moveTo(cx,0);h.lineTo(cx,H)}else{h.moveTo(0,cy-(s.a*(-8)+s.b)*S);h.lineTo(W,cy-(s.a*8+s.b)*S)}h.stroke()}
+else{for(var X=0;X<W;X+=6)for(var Y=0;Y<H;Y+=6){if(s.m((X-cx)/S,-(Y-cy)/S)){h.fillRect(X,Y,6,6)}}}
+pts.forEach(function(p){var P=px(p[0]);h.fillStyle=p[1];h.beginPath();h.arc(P[0],P[1],6,0,7);h.fill()})}
+function card(ok,t,d){return '<div class="'+(ok?'y':'n')+'">'+(ok?'✅ ':'❌ ')+'<b>'+t+'</b><br>'+d+'</div>'}
+function scan(){var s=sets[sel.value];pts=[];var zero=mem(s,0,0),sumBad=null,scBad=null;
+for(var i=0;i<300&&(!sumBad||!scBad);i++){var a=samp(s),b=samp(s),c=Math.round(R(-3,3)*2)/2||2;
+if(!sumBad&&!mem(s,a.x+b.x,a.y+b.y))sumBad=[a,b,{x:a.x+b.x,y:a.y+b.y}];
+if(!scBad&&!mem(s,c*a.x,c*a.y))scBad=[a,c,{x:c*a.x,y:c*a.y}]}
+var fa=function(p){return '('+f(p.x)+', '+f(p.y)+')'};
+$('res').innerHTML=card(zero,'① Cero',zero?'(0,0) está dentro.':'(0,0) NO está. Fin: no es subespacio.')+
+card(!sumBad,'② Suma',sumBad?'u='+fa(sumBad[0])+' y v='+fa(sumBad[1])+' están dentro, pero u+v='+fa(sumBad[2])+' sale.':'300 pares probados, ninguno sale.')+
+card(!scBad,'③ Escalares',scBad?'u='+fa(scBad[0])+' está dentro, pero '+scBad[1]+'·u='+fa(scBad[2])+' sale.':'300 escalares probados, ninguno sale.');
+var all=zero&&!sumBad&&!scBad;
+$('note').textContent=all?'Veredicto: pasa las 3 pruebas, es un subespacio (se demuestra con álgebra).':'Veredicto: NO es subespacio. El contraejemplo de arriba lo demuestra.';
+if(sumBad){pts.push([sumBad[0],'#4fe3ff'],[sumBad[1],'#ffb347'],[sumBad[2],'#ff6b7d'])}
+else if(scBad){pts.push([scBad[0],'#4fe3ff'],[scBad[2],'#ff6b7d'])}
+pts.push([{x:0,y:0},zero?'#5dffb0':'#ff6b7d']);gain(15,'scan'+sel.value);d2()}
+$('scan').onclick=scan;sel.onchange=function(){pts=[];$('res').innerHTML='';$('note').textContent='';d2()};d2();
+/* Quiz */
+var Q=[
+{q:'Ej. 1a. En ℝ² con u = (2,−1) y v = (3,4), ¿cuánto es u + v?',o:['(5, 3)','(−1, −5)','(6, −4)'],a:0,w:'Se suma componente a componente: (2+3, −1+4) = (5,3), que sigue en ℝ² (cerradura).'},
+{q:'Ej. 1d. ¿Cuál es el inverso aditivo −u de u = (2,−1)?',o:['(2, 1)','(−2, 1)','(−2, −1)'],a:1,w:'Debe cumplir u + (−u) = (0,0): (2,−1) + (−2,1) = (0,0).'},
+{q:'Ej. 1e. Con c = −2 y u = (2,−1), ¿cuánto es cu?',o:['(−4, 2)','(−4, −2)','(0, −3)'],a:0,w:'(−2)(2) = −4 y (−2)(−1) = 2, así que cu = (−4,2), que sigue en ℝ².'},
+{q:'Ej. 2a. ¿S₁ = {(x,y) : y = 3x} contiene al vector cero?',o:['Sí','No'],a:0,w:'Sí: 0 = 3·0. Contener al cero es solo el primer paso (S₁ además es subespacio: es una recta por el origen).'},
+{q:'Ej. 2b. ¿S₂ = {(x,y) : y = x + 2} es subespacio?',o:['Sí','No'],a:1,w:'No. (0,0) no cumple: 0 ≠ 0 + 2. Sin el cero no puede ser subespacio (es una recta que no pasa por el origen).'},
+{q:'Ej. 2c. ¿S₃ = {(x,y) : x = 0} es subespacio?',o:['Sí','No'],a:0,w:'Sí. Es el eje y: contiene al (0,0) y sumar o estirar vectores (0,y) da otro (0,y).'},
+{q:'Ej. 2e. S₄ = {x ≥ 0, y ≥ 0} contiene al cero. ¿Eso basta para ser subespacio?',o:['Sí, basta con el cero','No: falla otra condición'],a:1,w:'Contener al cero es necesario pero no suficiente. Con u = (1,1) y c = −1 sale (−1,−1), fuera del cuadrante: falla la cerradura por escalares.'},
+{q:'Ej. 3b. En S₂ = {y = x + 2}, u = (0,2) y v = (1,3) están dentro. ¿u + v está en S₂?',o:['Sí','No'],a:1,w:'u + v = (1,5), pero 5 ≠ 1 + 2 = 3. Es un contraejemplo de la cerradura bajo suma.'},
+{q:'Ej. 4c. En S₅ = {x² + y² ≤ 1} (disco), u = (1,0) está dentro. ¿2u está en S₅?',o:['Sí','No'],a:1,w:'2u = (2,0) y 2² + 0² = 4 > 1. Falla la cerradura por escalares: el disco no es subespacio.'},
+{q:'Ej. 5d. T = {x + 2y − z = 0}. Con u = (1,1,3) y v = (2,0,2), ¿u + v = (3,1,5) está en T?',o:['Sí','No'],a:0,w:'u ∈ T (1+2−3 = 0), v ∈ T (2+0−2 = 0) y u+v: 3+2−5 = 0. Coincide con la demostración general.'},
+{q:'Ej. 6c. ¿W′ = {(x,y,z) : x = y = 0} es subespacio de ℝ³?',o:['Sí','No'],a:0,w:'Sí. Es el eje z, {(0,0,z)}: contiene al cero y sumar o estirar vectores (0,0,z) da otro (0,0,z).'},
+{q:'Ej. 7b. Los datos válidos cumplen v₁ + v₂ + v₃ = 0. ¿La señal (2,−1,4) es válida?',o:['Sí','No'],a:1,w:'2 + (−1) + 4 = 5 ≠ 0. Sensor con falla.'},
+{q:'Ej. 7c. Datos válidos (1,−1,0) y (0,2,−2). ¿Su suma es válida?',o:['Sí','No'],a:0,w:'La suma es (1,1,−2) y 1 + 1 − 2 = 0. Es la cerradura bajo suma del subespacio.'},
+{q:'Ej. 7d. ¿3(1,−1,0) = (3,−3,0) es un dato válido?',o:['Sí','No'],a:0,w:'3 − 3 + 0 = 0. Es la cerradura bajo producto por escalar.'},
+{q:'Ejemplo. S = {(x₁,x₂,x₃,x₄) ∈ ℝ⁴ : x₁ = x₄}. ¿Qué dimensión tiene?',o:['2','3','4'],a:1,w:'Una restricción lineal quita 1 grado de libertad: 4 − 1 = 3 (base: (1,0,0,1), (0,1,0,0), (0,0,1,0)).'},
+{q:'Ejemplo. Las matrices 2×2 de traza nula, ¿qué dimensión tienen?',o:['2','3','4'],a:1,w:'La fórmula es n² − 1; con n = 2 da 3. La traza es un solo funcional lineal que se anula.'},
+{q:'Ejemplo. Soluciones de x + 2y − z = 0 y 2x − y + 3z = 0. ¿Qué dimensión tiene S?',o:['0','1','2'],a:1,w:'Resolviendo sale S = gen{(1,−1,−1)}: una recta por el origen, dimensión 1.'},
+{q:'Ejemplo. ¿Los polinomios de grado exactamente 2 forman un subespacio de P₂?',o:['Sí','No'],a:1,w:'No. El polinomio cero no tiene grado 2, y además x² + (−x² + x) = x tiene grado 1.'},
+{q:'Ejemplo. ¿Las matrices invertibles forman un subespacio de Mₙₓₙ(ℝ)?',o:['Sí','No'],a:1,w:'No. La matriz nula no es invertible (falla el cero) y la suma de dos invertibles puede no serlo.'},
+{q:'¿Es S = {B ∈ M₂ₓ₂ : A₀B = BA₀} con A₀ = [[0,1],[0,0]] un subespacio?',o:['Sí','No'],a:0,w:'Sí. Las condiciones sobre B (c = 0 y a = d) son ecuaciones lineales homogéneas, así que S = {[[a,b],[0,a]]} es subespacio de dimensión 2.'},
+{q:'¿Las soluciones de f″ − 3f′ + 2f = 0 forman un subespacio de C²(ℝ)?',o:['Sí','No'],a:0,w:'Sí. El operador L(f) = f″ − 3f′ + 2f es lineal y S = ker(L).'},
+{q:'¿Las sucesiones con aₙ₊₂ = aₙ₊₁ + aₙ (Fibonacci) forman un subespacio?',o:['Sí','No'],a:0,w:'Sí. Si (aₙ) y (bₙ) cumplen la recurrencia, (aₙ+bₙ) y (λaₙ) también, por linealidad.'},
+{q:'¿Las matrices 2×2 con entradas enteras son un subespacio de M₂ₓ₂(ℝ) sobre ℝ?',o:['Sí','No'],a:1,w:'No. Falla la cerradura por escalares: ½ por una matriz con entradas enteras impares da entradas no enteras.'},
+{q:'¿Las funciones continuas en [0,2] con ∫f = 0 son un subespacio?',o:['Sí','No'],a:0,w:'Sí. La integral es lineal: ∫(f+g) = 0 y ∫λf = 0, y la función nula está dentro.'},
+{q:'¿W = {(x,y,z) : xyz = 0} es subespacio de ℝ³?',o:['Sí','No'],a:1,w:'No. u = (1,0,0) y v = (0,1,1) están en W, pero u+v = (1,1,1) tiene xyz = 1 ≠ 0.'}];
+var qz=$('quiz');Q.forEach(function(it,i){var d=document.createElement('div');d.className='card';d.innerHTML='<b>'+(i<14?'🟢 Básico · ':i<19?'🟡 Temario · ':'🔴 Avanzado · ')+(i+1)+'. '+it.q+'</b><div></div><p class="ro"></p>';
+var box=d.children[1],fb=d.children[2];it.o.forEach(function(t,j){var b=document.createElement('button');b.className='opt';b.textContent=t;
+b.onclick=function(){if(d.dataset.done)return;d.dataset.done=1;var ok=j===it.a;b.className='opt '+(ok?'ok':'no');if(!ok)box.children[it.a].className='opt ok';
+fb.textContent=(ok?'¡Correcto! ':'Casi. ')+it.w;if(ok)gain(30,'q'+i)};box.appendChild(b)});qz.appendChild(d)});
+})();
+</script>
+</body>
+</html>
